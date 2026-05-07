@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: auctionation
+      POSTGRES_USER: auctionation
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - auctionation-postgres-data:/var/lib/postgresql/data
+      - ./infra/sql/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auctionation -d auctionation"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      target: api
+    image: auctionation-api:latest
+    environment:
+      NODE_ENV: production
+      API_HOST: 0.0.0.0
+      API_PORT: 3000
+      DATABASE_URL: postgresql://auctionation:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/auctionation
+      PUBLIC_APP_URL: ${PUBLIC_APP_URL:?Set PUBLIC_APP_URL}
+      PUBLIC_EMBED_URL: ${PUBLIC_EMBED_URL:?Set PUBLIC_EMBED_URL}
+      CORS_ORIGINS: ${CORS_ORIGINS:-${PUBLIC_APP_URL},${PUBLIC_EMBED_URL}}
+    ports:
+      - "${API_PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3000/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+
+  admin:
+    build:
+      context: .
+      target: admin
+    image: auctionation-admin:latest
+    ports:
+      - "${ADMIN_PORT:-8080}:80"
+    restart: unless-stopped
+
+  embed:
+    build:
+      context: .
+      target: embed
+    image: auctionation-embed:latest
+    ports:
+      - "${EMBED_PORT:-8081}:80"
+    restart: unless-stopped
+
+volumes:
+  auctionation-postgres-data:

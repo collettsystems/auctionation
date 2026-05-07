@@ -14,8 +14,13 @@
     "workers/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build:packages && npm run build:apps && npm run build:workers",
+    "build:packages": "npm run build --workspace @auctionation/shared --workspace @auctionation/email --workspace @auctionation/notifications",
+    "build:apps": "npm run build --workspace @auctionation/admin --workspace @auctionation/api --workspace @auctionation/embed --workspace @auctionation/widget-demo",
+    "build:workers": "npm run build --workspace @auctionation/notifications-worker",
     "typecheck": "npm run typecheck --workspaces --if-present",
+    "docker:prod:config": "docker compose -f docker-compose.prod.yml config",
+    "docker:prod:build": "docker compose -f docker-compose.prod.yml build",
     "dev:api": "npm --workspace @auctionation/api run dev",
     "dev:admin": "npm --workspace @auctionation/admin run dev",
     "dev:embed": "npm --workspace @auctionation/embed run dev",

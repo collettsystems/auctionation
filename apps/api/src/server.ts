@@ -1,29 +1,19 @@
-import cors from "@fastify/cors";
-import Fastify from "fastify";
-import { loadConfig } from "./config.js";
-import { registerHealthRoutes } from "./routes/health.js";
-import { registerPublicAuctionRoutes } from "./routes/public-auctions.js";
-
-export async function buildServer() {
-  const config = loadConfig();
-  const app = Fastify({
-    logger: true,
-    genReqId: () => crypto.randomUUID()
-  });
-
-  await app.register(cors, {
-    origin: true,
-    credentials: true
-  });
-
-  app.decorate("config", config);
-  await registerHealthRoutes(app);
-  await registerPublicAuctionRoutes(app);
-
-  return { app, config };
-}
+import { buildServer } from "./app.js";
 
 const { app, config } = await buildServer();
+
+async function closeGracefully(signal: NodeJS.Signals): Promise<void> {
+  app.log.info({ signal }, "Shutting down Auctionation API.");
+  await app.close();
+}
+
+process.once("SIGINT", (signal) => {
+  void closeGracefully(signal);
+});
+
+process.once("SIGTERM", (signal) => {
+  void closeGracefully(signal);
+});
 
 try {
   await app.listen({ host: config.host, port: config.port });

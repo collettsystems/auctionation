@@ -72,6 +72,10 @@ npm run db:local:down
 
 See [Local Testing Setup](docs/local-testing.md) for the full setup, database reset flow, quality gates, and smoke-test URLs.
 
+## Production Docker
+
+Production Docker targets are available for the API and static frontend apps. See [Docker Production Setup](docs/docker-production.md) for required environment variables, Compose validation, build, and run commands.
+
 ## Initial product direction
 
 - Admin-created invite links for bidder registration

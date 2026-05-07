@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Third-Party Auctionation Embed Demo</title>
+    <style>
+      body {
+        background: #f6f0e8;
+        color: #302718;
+        font-family: Georgia, "Times New Roman", serif;
+        margin: 0;
+      }
+
+      .site-shell {
+        margin: 0 auto;
+        max-width: 1040px;
+        padding: 48px 20px;
+      }
+
+      .client-header {
+        border-bottom: 2px solid #302718;
+        margin-bottom: 28px;
+        padding-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="site-shell">
+      <header class="client-header">
+        <p>Example third-party nonprofit site</p>
+        <h1>Annual Spring Gala</h1>
+        <p>The block below is injected by the Auctionation iframe helper.</p>
+      </header>
+
+      <div id="auctionation-auction"></div>
+      <script
+        type="module"
+        src="/src/auctionation-embed.ts"
+        data-container="auctionation-auction"
+        data-embed-origin="http://localhost:5174"
+        data-tenant="demo-charity"
+        data-auction="spring-gala"
+      ></script>
+    </main>
+  </body>
+</html>

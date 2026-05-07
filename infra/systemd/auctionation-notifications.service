@@ -1,0 +1,16 @@
+[Unit]
+Description=Auctionation notification worker
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/auctionation
+EnvironmentFile=/etc/auctionation/api.env
+ExecStart=/usr/bin/node /opt/auctionation/workers/notifications/dist/workers/notifications/src/index.js
+Restart=always
+RestartSec=5
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target

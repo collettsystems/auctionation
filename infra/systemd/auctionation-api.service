@@ -1,0 +1,16 @@
+[Unit]
+Description=Auctionation Fastify API
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/auctionation
+EnvironmentFile=/etc/auctionation/api.env
+ExecStart=/usr/bin/node /opt/auctionation/apps/api/dist/apps/api/src/server.js
+Restart=always
+RestartSec=5
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target

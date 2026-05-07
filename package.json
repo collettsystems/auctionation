@@ -1,0 +1,30 @@
+{
+  "name": "auctionation",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Commercial multi-tenant silent auction platform with iframe embedding.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "dev:api": "npm --workspace @auctionation/api run dev",
+    "dev:admin": "npm --workspace @auctionation/admin run dev",
+    "dev:embed": "npm --workspace @auctionation/embed run dev",
+    "dev:widget-demo": "npm --workspace @auctionation/widget-demo run dev",
+    "dev:notifications": "npm --workspace @auctionation/notifications-worker run dev",
+    "clean": "find apps packages workers -type d \\( -name dist -o -name node_modules \\) -prune -exec rm -rf {} +"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "typescript": "^5.7.3"
+  }
+}

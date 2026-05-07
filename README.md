@@ -60,6 +60,18 @@ npm run dev:widget-demo
 npm run dev:notifications
 ```
 
+## Local testing
+
+A local PostgreSQL database is recommended for development and smoke testing, even though the initial public auction API route currently serves scaffolded demo data. The repository includes a Docker Compose PostgreSQL service and npm helpers:
+
+```bash
+npm run db:local:up
+npm run db:local:reset
+npm run db:local:down
+```
+
+See [Local Testing Setup](docs/local-testing.md) for the full setup, database reset flow, quality gates, and smoke-test URLs.
+
 ## Initial product direction
 
 - Admin-created invite links for bidder registration

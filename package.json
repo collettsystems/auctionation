@@ -21,7 +21,11 @@
     "dev:embed": "npm --workspace @auctionation/embed run dev",
     "dev:widget-demo": "npm --workspace @auctionation/widget-demo run dev",
     "dev:notifications": "npm --workspace @auctionation/notifications-worker run dev",
-    "clean": "find apps packages workers -type d \\( -name dist -o -name node_modules \\) -prune -exec rm -rf {} +"
+    "clean": "find apps packages workers -type d \\( -name dist -o -name node_modules \\) -prune -exec rm -rf {} +",
+    "db:local:up": "docker compose up -d postgres",
+    "db:local:down": "docker compose down",
+    "db:local:reset": "docker compose down -v && docker compose up -d postgres",
+    "db:schema:apply": "psql \"${DATABASE_URL:-postgresql://auctionation:auctionation@localhost:5432/auctionation}\" -f infra/sql/001_initial_schema.sql"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",

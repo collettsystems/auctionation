@@ -40,6 +40,42 @@ docker compose -f docker-compose.prod.yml exec -T postgres \
   psql -U auctionation -d auctionation < infra/sql/002_demo_seed.sql
 ```
 
+## Admin API troubleshooting
+
+The admin container serves the React app and proxies browser-facing `/api/*` requests to the private API service. For example:
+
+```bash
+curl -i http://localhost:${ADMIN_PORT:-8080}/api/admin/platform/overview
+```
+
+Expected result is a `200 OK` JSON envelope once the API and database are healthy.
+
+If this request returns a PostgreSQL authentication error such as:
+
+```json
+{"code":"28P01","message":"password authentication failed for user \"auctionation\""}
+```
+
+then the API route and nginx proxy are working, but `DATABASE_URL` does not match the password stored in the existing PostgreSQL Docker volume. This commonly happens after changing `POSTGRES_PASSWORD` in `.env`; PostgreSQL only applies that variable when the database volume is first initialized.
+
+For disposable local/staging data, reset the volume and rebuild:
+
+```bash
+docker compose -f docker-compose.prod.yml down -v
+docker compose -f docker-compose.prod.yml build --no-cache api admin
+docker compose -f docker-compose.prod.yml up -d
+```
+
+For data that must be preserved, update the existing database user's password to match `.env` instead of deleting the volume.
+
+If the direct API URL returns a route-not-found response:
+
+```bash
+curl -i http://localhost:${API_PORT:-3000}/admin/platform/overview
+```
+
+then the process listening on the published API port is not the same freshly-built API code or is not the browser-facing path. Rebuild and recreate the API container with `--no-cache`, then check `docker compose -f docker-compose.prod.yml ps` for port conflicts or stale containers.
+
 ## Images
 
 The root `Dockerfile` has these production targets:

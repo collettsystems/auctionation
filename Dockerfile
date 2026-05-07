@@ -42,6 +42,7 @@ CMD ["node", "workers/notifications/dist/workers/notifications/src/index.js"]
 
 FROM nginx:1.27-alpine AS admin
 COPY --from=build /app/apps/admin/dist /usr/share/nginx/html
+COPY infra/nginx/admin.conf /etc/nginx/conf.d/default.conf
 
 FROM nginx:1.27-alpine AS embed
 COPY --from=build /app/apps/embed/dist /usr/share/nginx/html

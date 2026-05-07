@@ -3,6 +3,7 @@ import Fastify from "fastify";
 import { randomUUID } from "node:crypto";
 import { loadConfig } from "./config.js";
 import { createDatabasePool } from "./db.js";
+import { registerAdminRoutes } from "./routes/admin.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerPublicAuctionRoutes } from "./routes/public-auctions.js";
 
@@ -26,6 +27,7 @@ export async function buildServer() {
   });
 
   await registerHealthRoutes(app);
+  await registerAdminRoutes(app);
   await registerPublicAuctionRoutes(app);
 
   return { app, config };

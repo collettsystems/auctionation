@@ -2,11 +2,13 @@ import cors from "@fastify/cors";
 import Fastify from "fastify";
 import { randomUUID } from "node:crypto";
 import { loadConfig } from "./config.js";
+import { createDatabasePool } from "./db.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerPublicAuctionRoutes } from "./routes/public-auctions.js";
 
 export async function buildServer() {
   const config = loadConfig();
+  const db = createDatabasePool(config);
   const app = Fastify({
     logger: true,
     genReqId: () => randomUUID()
@@ -18,6 +20,11 @@ export async function buildServer() {
   });
 
   app.decorate("config", config);
+  app.decorate("db", db);
+  app.addHook("onClose", async () => {
+    await db.end();
+  });
+
   await registerHealthRoutes(app);
   await registerPublicAuctionRoutes(app);
 

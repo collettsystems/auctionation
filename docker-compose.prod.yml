@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:16-alpine
+    init: true
     environment:
       POSTGRES_DB: auctionation
       POSTGRES_USER: auctionation
@@ -16,6 +17,7 @@ services:
     restart: unless-stopped
 
   api:
+    init: true
     build:
       context: .
       target: api
@@ -41,6 +43,7 @@ services:
     restart: unless-stopped
 
   admin:
+    init: true
     build:
       context: .
       target: admin
@@ -50,6 +53,7 @@ services:
     restart: unless-stopped
 
   embed:
+    init: true
     build:
       context: .
       target: embed

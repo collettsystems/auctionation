@@ -62,7 +62,7 @@ npm run dev:notifications
 
 ## Local testing
 
-A local PostgreSQL database is recommended for development and smoke testing, even though the initial public auction API route currently serves scaffolded demo data. The repository includes a Docker Compose PostgreSQL service and npm helpers:
+A local PostgreSQL database is required for API runtime readiness and smoke testing. The repository includes a Docker Compose PostgreSQL service, schema bootstrap, demo seed data, and npm helpers:
 
 ```bash
 npm run db:local:up
@@ -74,7 +74,7 @@ See [Local Testing Setup](docs/local-testing.md) for the full setup, database re
 
 ## Production Docker
 
-Production Docker targets are available for the API and static frontend apps. See [Docker Production Setup](docs/docker-production.md) for required environment variables, Compose validation, build, and run commands.
+Production Docker targets are available for the API and static frontend apps. The production Compose stack runs PostgreSQL privately, waits for database readiness, and uses the API `/health` endpoint to verify PostgreSQL connectivity. See [Docker Production Setup](docs/docker-production.md) for required environment variables, Compose validation, build, and run commands.
 
 ## Initial product direction
 

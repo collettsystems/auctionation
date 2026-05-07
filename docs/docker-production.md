@@ -1,6 +1,6 @@
 # Docker Production Setup
 
-The repository includes a production-oriented Docker build for the API and static frontend apps, plus a PostgreSQL service for single-host deployments.
+The repository includes a production-oriented Docker build for the API and static frontend apps, plus a PostgreSQL service for single-host deployments. The API creates a PostgreSQL connection pool at runtime, closes it gracefully on shutdown, and its `/health` endpoint validates database connectivity.
 
 ## Required environment
 
@@ -31,7 +31,14 @@ docker compose -f docker-compose.prod.yml build
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-The API health check is available at `/health`. PostgreSQL is not published to the host in the production Compose file; the API talks to it on the private Compose network.
+The API health check is available at `/health` and returns healthy only when PostgreSQL is reachable. PostgreSQL is not published to the host in the production Compose file; the API talks to it on the private Compose network.
+
+The production Compose file applies `infra/sql/001_initial_schema.sql` to new database volumes. Demo seed data is intentionally not mounted in production. For staging or smoke-test-only environments where demo content is desired, apply `infra/sql/002_demo_seed.sql` manually after the database is created:
+
+```bash
+docker compose -f docker-compose.prod.yml exec -T postgres \
+  psql -U auctionation -d auctionation < infra/sql/002_demo_seed.sql
+```
 
 ## Images
 

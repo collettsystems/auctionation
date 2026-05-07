@@ -57,6 +57,10 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_tenant_email_unique
+  ON users(tenant_id, email)
+  WHERE email IS NOT NULL;
+
 CREATE TABLE IF NOT EXISTS invites (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id uuid NOT NULL REFERENCES tenants(id),
@@ -85,6 +89,9 @@ CREATE TABLE IF NOT EXISTS bids (
 );
 
 CREATE INDEX IF NOT EXISTS idx_auctions_tenant_status ON auctions(tenant_id, status);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_items_auction_lot_number_unique
+  ON auction_items(auction_id, lot_number)
+  WHERE lot_number IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_items_auction ON auction_items(auction_id);
 CREATE INDEX IF NOT EXISTS idx_bids_item_amount ON bids(item_id, amount_cents DESC, created_at ASC);
 CREATE INDEX IF NOT EXISTS idx_invites_tenant_status ON invites(tenant_id, status);

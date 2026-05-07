@@ -19,7 +19,7 @@ npm ci
 
 ## 2. Start a local PostgreSQL database
 
-Yes, a local testing database is recommended. The current API scaffold still serves demo in-memory auction data, but the repository already includes the target PostgreSQL schema and environment settings. Running Postgres locally keeps the app setup aligned with upcoming API work.
+A local testing database is required because the API health check and public auction endpoint validate PostgreSQL at runtime.
 
 The easiest path is Docker Compose:
 
@@ -33,7 +33,7 @@ This starts a PostgreSQL 16 container with:
 DATABASE_URL=postgresql://auctionation:auctionation@localhost:5432/auctionation
 ```
 
-The initial schema at `infra/sql/001_initial_schema.sql` is mounted into the container entrypoint and is applied when the database volume is created for the first time.
+The initial schema at `infra/sql/001_initial_schema.sql` and demo seed data at `infra/sql/002_demo_seed.sql` are mounted into the container entrypoint and are applied when the database volume is created for the first time.
 
 To reset the local database volume and re-apply the schema:
 
@@ -90,7 +90,13 @@ npm run dev:notifications
 Open these URLs for manual testing:
 
 - API health: <http://127.0.0.1:3000/health>
-- Public auction JSON: <http://127.0.0.1:3000/public/t/demo-charity/a/spring-gala>
+- Public auction JSON backed by PostgreSQL seed data: <http://127.0.0.1:3000/public/t/demo-charity/a/spring-gala>
 - Admin dashboard: <http://127.0.0.1:5173>
 - Embed app: <http://127.0.0.1:5174?tenant=demo-charity&auction=spring-gala>
 - Third-party widget demo: <http://127.0.0.1:5175>
+
+Expected API readiness behavior:
+
+- `/health` returns `200` with `database: "ok"` when PostgreSQL is reachable.
+- `/health` returns `503` with `database: "unavailable"` when PostgreSQL is down or unreachable.
+- The public auction endpoint returns `404` if the requested tenant/auction does not exist in PostgreSQL.
